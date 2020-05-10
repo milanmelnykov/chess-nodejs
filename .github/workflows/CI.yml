@@ -37,5 +37,10 @@ jobs:
       
     - name: Test app
       run: npm test 
-      
+    - name: Telegram Message Notify
+      uses: appleboy/telegram-action@0.0.7
+      with:
+        to: ${{ secrets.TG_USER }}
+        token: ${{ secrets.TG_TOKEN }}
+     
 
