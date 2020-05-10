@@ -1,0 +1,46 @@
+name: CHESS APP CI
+
+on:
+#   pull_request:
+#     branches: 
+#       - master
+  push:
+    branches: 
+      - feauture/ci
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [6.x, 8.x, 10.x]
+
+    steps:  
+    - name: Clone our repo 
+      uses: actions/checkout@v2
+      
+    - name: SonarCloud Scan
+      uses: sonarsource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      
+    - name: Pick Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+        
+    - name: Gazer dependencies, build code
+      run: npm install
+      
+    - name: Test app
+      run: npm test 
+    - name: Telegram Message Notify
+      uses: appleboy/telegram-action@0.0.7
+      with:
+        to: ${{ secrets.TG_USER }}
+        token: ${{ secrets.TG_TOKEN }}
+     
+
