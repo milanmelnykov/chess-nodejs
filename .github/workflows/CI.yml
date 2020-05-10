@@ -35,6 +35,6 @@ jobs:
     - name: Test app
       run: npm test 
       
-    - name: SonarCloud Scan
-      uses: SonarSource/sonarcloud-github-action@v1.2
+#     - name: SonarCloud Scan
+#       uses: SonarSource/sonarcloud-github-action@v1.2
     
