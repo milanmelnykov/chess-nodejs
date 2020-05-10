@@ -24,6 +24,12 @@ jobs:
     - name: Clone our repo 
       uses: actions/checkout@v2
       
+    - name: SonarCloud Scan
+      uses: sonarsource/sonarcloud-github-action@v1.2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      
     - name: Pick Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
@@ -35,8 +41,4 @@ jobs:
     - name: Test app
       run: npm test 
       
-    - name: SonarCloud Scan
-      uses: sonarsource/sonarcloud-github-action@v1.2
-      env:
-        GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
