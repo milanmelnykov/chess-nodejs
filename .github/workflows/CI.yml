@@ -4,9 +4,9 @@
 name: CHESS APP CI
 
 on:
-  pull_request:
-    branches: 
-      - master
+#   pull_request:
+#     branches: 
+#       - master
   push:
     branches: 
       - feauture/ci
@@ -28,5 +28,5 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - run: npm ci
+    - run: npm install
     - run: npm run build --if-present
