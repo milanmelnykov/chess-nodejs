@@ -5,7 +5,11 @@ name: CHESS APP CI
 
 on:
   pull_request:
-    branches: [ master ]
+    branches: 
+      - master
+  push:
+    branches: 
+      - feauture/ci
 
 jobs:
   build:
