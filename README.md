@@ -1,3 +1,5 @@
+![CHESS APP CI](https://github.com/milanmelnykov/chess-nodejs/workflows/CHESS%20APP%20CI/badge.svg)
+
 Before anything: run `npm install` inside project directory
 
 ## Build
