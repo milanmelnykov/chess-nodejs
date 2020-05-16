@@ -23,7 +23,7 @@ jobs:
       - name: Get public ip
         run: |
           aws ec2 describe-instances --region ${{ env.AWS_REGION }} \
-          --filter Name=tag:Name, Values=chess-back\
+          --filter Name=tag:Name, Values=chess-back \
           --output=text |grep ASSOCIATION|uniq -c|awk '{print $5}'
 #     - name: Clone our repo 
 #       uses: actions/checkout@v2
