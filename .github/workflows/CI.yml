@@ -14,41 +14,49 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:  
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-      - name: Get public ip
-        run: |
-          aws ec2 describe-instances --region ${{ env.AWS_REGION }} \
-          --filter Name=tag:Name,Values=chess-back \
-          --output=text |grep ASSOCIATION|uniq -c|awk '{print $5}'
-#     - name: Clone our repo 
-#       uses: actions/checkout@v2
+    - name: Clone our repo 
+      uses: actions/checkout@v2
       
-#     - name: Setup node.js 6.x
-#       uses: actions/setup-node@v1
-#       with:
-#         node-version: 6.x
+    - name: Setup node.js 6.x
+      uses: actions/setup-node@v1
+      with:
+        node-version: 6.x
         
-#     - name: Gazer dependencies
-#       run: npm install
+    - name: Gazer dependencies
+      run: npm install
       
-#     - name: Test app
-#       run: npm test 
+    - name: Test app
+      run: npm test 
 
-#     - name: SonarCloud Scan
-#       uses: sonarsource/sonarcloud-github-action@master
-#       env:
-#         GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
-#         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    - name: SonarCloud Scan
+      uses: sonarsource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   
-#     - name: Status message to Telegram
-#       uses: yanzay/notify-telegram@v0.1.0
-#       if: always()
-#       with:
-#         chat: ${{ secrets.TG_USER }}
-#         token: ${{ secrets.TG_TOKEN }}
-#         status: ${{ job.status }}
+    - name: Status message to Telegram
+      uses: yanzay/notify-telegram@v0.1.0
+      if: always()
+      with:
+        chat: ${{ secrets.TG_USER }}
+        token: ${{ secrets.TG_TOKEN }}
+        status: ${{ job.status }}
+      
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+    
+    - name: Check if client exists
+      run: ls lib/
+    
+    - name: Build production artifact of client-side application 
+      run: |
+        NODE_ENV=production API_URL=$(aws ec2 describe-instances \ 
+        --region ${{ env.AWS_REGION }} \
+        --filter Name=tag:Name,Values=chess-back \
+        --output=text |grep ASSOCIATION|uniq -c|awk '{print $5}') \
+        npn run build
+  
