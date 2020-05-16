@@ -11,31 +11,29 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [6.x, 8.x, 10.x]
+
     steps:  
     - name: Clone our repo 
       uses: actions/checkout@v2
       
-    - name: SonarCloud Scan
-      uses: sonarsource/sonarcloud-github-action@master
-      env:
-        GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      
-    - name: Pick Node.js ${{ matrix.node-version }}
+    - name: Setup node.js 6.x
       uses: actions/setup-node@v1
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: 6.x
         
-    - name: Gazer dependencies, build code
+    - name: Gazer dependencies
       run: npm install
       
     - name: Test app
       run: npm test 
 
-    - name: Message to Telegram
+    - name: SonarCloud Scan
+      uses: sonarsource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  
+    - name: Status message to Telegram
       uses: yanzay/notify-telegram@v0.1.0
       if: always()
       with:
