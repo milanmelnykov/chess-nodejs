@@ -53,9 +53,23 @@ jobs:
         --output=text |grep ASSOCIATION|uniq -c|awk '{print $5}') \
         npm run build
         
-    - name: Check if client exists(2)
-      run: ls lib/
-    
+    - name: Zip artifacts
+      run: |
+       zip backend -r node_modules/ lib/server/ lib/common/
+       zip frontend -r lib/client
+      
+    - name: Upload frontend artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: frontend-artifact
+        path: ./frontend.zip
+      
+    - name: Upload backend artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: backend-artifact
+        path: ./backend.zip
+        
     - name: Status message to Telegram
       uses: yanzay/notify-telegram@v0.1.0
       if: always()
