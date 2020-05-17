@@ -25,14 +25,14 @@ jobs:
     - name: Gazer dependencies
       run: npm install
       
-    - name: Test app
-      run: npm test 
+#     - name: Test app
+#       run: npm test 
 
-    - name: SonarCloud Scan
-      uses: sonarsource/sonarcloud-github-action@master
-      env:
-        GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+#     - name: SonarCloud Scan
+#       uses: sonarsource/sonarcloud-github-action@master
+#       env:
+#         GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+#         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       
     - name: Configure AWS Credentials
@@ -51,32 +51,38 @@ jobs:
         --output=text |grep ASSOCIATION|uniq -c|awk '{print $5}') \
         npm run build
         
-#     - name: Zip artifacts
-#       run: |
-#        zip backend -r node_modules/ lib/server/ lib/common/
-#        zip frontend -r lib/client
+    - name: Zip artifacts
+      run: |
+       zip backend -r node_modules/ lib/server/ lib/common/
+       zip frontend -r lib/client
       
     - name: Upload frontend artifact
       uses: actions/upload-artifact@v2
       with:
-        name: frontend
-        path: lib/client
+        name: frontend-git
+        path: frontend.zip
     
-    - name: Upload backend artifact (1/2)
+    - name: Upload backend artifact
       uses: actions/upload-artifact@v2
       with:
-        name: backend
-        path: lib/!(client)
+        name: backend-git
+        path: backend.zip 
         
-    - name: Upload backend artifact (2/2)
-      uses: actions/upload-artifact@v2
+    - name: Mkdir
+      run: mkdir ./test-artifacts
+    - name: Download a Build Artifact
+      uses: actions/download-artifact@v2
       with:
-        path: node_modules  
+        path: ./test-artifacts
+        
+                
+    - name: Test artifacts
+      run: ls ./test-artifacts
            
-    - name: Status message to Telegram
-      uses: yanzay/notify-telegram@v0.1.0
-      if: always()
-      with:
-        chat: ${{ secrets.TG_USER }}
-        token: ${{ secrets.TG_TOKEN }}
-        status: ${{ job.status }}
+#     - name: Status message to Telegram
+#       uses: yanzay/notify-telegram@v0.1.0
+#       if: always()
+#       with:
+#         chat: ${{ secrets.TG_USER }}
+#         token: ${{ secrets.TG_TOKEN }}
+#         status: ${{ job.status }}
