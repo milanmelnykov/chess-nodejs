@@ -51,21 +51,28 @@ jobs:
         --output=text |grep ASSOCIATION|uniq -c|awk '{print $5}') \
         npm run build
         
-    - name: Zip artifacts
-      run: |
-       zip backend -r node_modules/ lib/server/ lib/common/
-       zip frontend -r lib/client
+#     - name: Zip artifacts
+#       run: |
+#        zip backend -r node_modules/ lib/server/ lib/common/
+#        zip frontend -r lib/client
       
     - name: Upload frontend artifact
       uses: actions/upload-artifact@v2
       with:
-        path: ./frontend.zip
-      
-    - name: Upload backend artifact
+        name: frontend
+        path: lib/client
+    
+    - name: Upload backend artifact (1/2)
       uses: actions/upload-artifact@v2
       with:
-        path: ./backend.zip
+        name: backend
+        path: lib/!(client)
         
+    - name: Upload backend artifact (2/2)
+      uses: actions/upload-artifact@v2
+      with:
+        path: node_modules  
+           
     - name: Status message to Telegram
       uses: yanzay/notify-telegram@v0.1.0
       if: always()
