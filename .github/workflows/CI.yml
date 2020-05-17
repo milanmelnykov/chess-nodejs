@@ -22,6 +22,19 @@ jobs:
       with:
         node-version: 6.x
         
+        
+    - name: Cache node modules
+      uses: actions/cache@v1
+      env:
+        cache-name: cache-node-modules
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-build-${{ env.cache-name }}-
+          ${{ runner.os }}-build-
+          ${{ runner.os }}-
+    
     - name: Gazer dependencies
       run: npm install
       
@@ -59,25 +72,16 @@ jobs:
     - name: Upload frontend artifact
       uses: actions/upload-artifact@v2
       with:
-        name: frontend-git
+        name: frontend
         path: frontend.zip
     
     - name: Upload backend artifact
       uses: actions/upload-artifact@v2
       with:
-        name: backend-git
+        name: backend
         path: backend.zip 
         
-    - name: Mkdir
-      run: mkdir ./test-artifacts
-    - name: Download a Build Artifact
-      uses: actions/download-artifact@v2
-      with:
-        path: ./test-artifacts
-        
-                
-    - name: Test artifacts
-      run: ls ./test-artifacts
+
            
 #     - name: Status message to Telegram
 #       uses: yanzay/notify-telegram@v0.1.0
