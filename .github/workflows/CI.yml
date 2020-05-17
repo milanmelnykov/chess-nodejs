@@ -80,13 +80,11 @@ jobs:
       with:
         name: backend
         path: backend.zip 
-        
-
-           
-#     - name: Status message to Telegram
-#       uses: yanzay/notify-telegram@v0.1.0
-#       if: always()
-#       with:
-#         chat: ${{ secrets.TG_USER }}
-#         token: ${{ secrets.TG_TOKEN }}
-#         status: ${{ job.status }}
+                
+    - name: Status message to Telegram
+      uses: yanzay/notify-telegram@v0.1.0
+      if: always()
+      with:
+        chat: ${{ secrets.TG_USER }}
+        token: ${{ secrets.TG_TOKEN }}
+        status: ${{ job.status }}
