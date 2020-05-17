@@ -1,6 +1,7 @@
 name: CHESS APP
 env:
   AWS_REGION: eu-central-1
+  CACHE-NAME: cache-node-modules
 on:
 #   pull_request:
 #     branches: 
@@ -21,17 +22,14 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: 6.x
-        
-        
+         
     - name: Cache node modules
       uses: actions/cache@v1
-      env:
-        cache-name: cache-node-modules
       with:
         path: ~/.npm
         key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
-          ${{ runner.os }}-build-${{ env.cache-name }}-
+          ${{ runner.os }}-build-${{ env.CACHE_NAME }}-
           ${{ runner.os }}-build-
           ${{ runner.os }}-
     
@@ -46,15 +44,13 @@ jobs:
 #       env:
 #         GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
 #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-      
+     
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
         aws-region: ${{ env.AWS_REGION }}
-    
     
     - name: Build production artifact of client-side application 
       run: |
