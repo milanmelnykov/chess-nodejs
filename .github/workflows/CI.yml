@@ -1,4 +1,4 @@
-name: CHESS APP
+name: CHESS CI/CD
 env:
   AWS_REGION: eu-central-1
   CACHE_PATH: node_modules
