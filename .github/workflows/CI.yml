@@ -11,7 +11,7 @@ on:
       - feauture/*
 
 jobs:
-  build:
+  CI:
     runs-on: ubuntu-latest
 
     steps:  
