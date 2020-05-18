@@ -61,7 +61,7 @@ jobs:
     - name: Zip artifacts
       run: |
        zip backend -r node_modules/ lib/server/ lib/common/
-       zip frontend -r lib/client
+       zip frontend -r lib/client/*
       
     - name: Upload frontend artifact
       uses: actions/upload-artifact@v2
