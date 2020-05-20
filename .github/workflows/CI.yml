@@ -34,14 +34,14 @@ jobs:
     - name: Gazer dependencies
       run: npm install
       
-#     - name: Test app
-#       run: npm test 
+    - name: Test app
+      run: npm test 
 
-#     - name: SonarCloud Scan
-#       uses: sonarsource/sonarcloud-github-action@master
-#       env:
-#         GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
-#         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    - name: SonarCloud Scan
+      uses: sonarsource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
      
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1.2.0
