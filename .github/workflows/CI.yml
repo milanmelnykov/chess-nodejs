@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:  
-    - name: Clone repository 
+    - name: Checkout 
       uses: actions/checkout@v2
       
     - name: Setup node.js ${{ env.NODE_VERSION }}
@@ -85,3 +85,11 @@ jobs:
         chat: ${{ secrets.TG_USER }}
         token: ${{ secrets.TG_TOKEN }}
         status: ${{ job.status }}
+
+  deploy:
+    name: CD
+    needs: CI
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout 
+      uses: actions/checkout@v2
