@@ -9,7 +9,7 @@ on:
 #       - master
   push:
     branches: 
-      - feauture/*
+      - feature/*
 
 jobs:
   CI:
