@@ -2,7 +2,7 @@ name: CHESS CI/CD
 env:
   NODE_VERSION: 6.x
   AWS_REGION: eu-central-1
-  CACHE_PATH: node_modules
+#   CACHE_PATH: node_modules
 on:
 #   pull_request:
 #     branches: 
@@ -34,7 +34,7 @@ jobs:
 #           ${{ env.CACHE_PATH }}-
     
     - name: Gazer dependencies
-      run: npm install
+      run: npm install --only=prod
       
     - name: Test app
       run: npm test 
