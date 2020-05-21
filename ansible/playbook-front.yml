@@ -1,0 +1,37 @@
+- name: Frontend playbook
+  hosts: tag_Name_chess_front
+  become: yes
+  tasks:
+    - name: Determine if the HTTPD is installed
+      register: validatehttpd
+      shell: httpd
+      ignore_errors: yes
+
+    - name: Install apache if not present
+      yum:
+        name: httpd
+        state: latest
+      when: "'not found' in validatehttpd.stderr"
+      
+    - name: Ensure Apache is running
+      service:
+        name: httpd
+        state: started
+
+    - name: Allow Apache to listen on tcp ports 80 and 443
+      seport:
+        ports: 80,443
+        proto: tcp
+        setype: http_port_t
+        state: present
+
+    - name: Ensure unzip package is present
+      yum:
+        name: unzip
+        state: present
+
+    - name: Extract frontend.zip into /var/www/html
+      unarchive:
+        src: frontend.zip
+        dest: /var/www/html/
+

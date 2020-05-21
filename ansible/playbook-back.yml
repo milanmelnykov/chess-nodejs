@@ -1,0 +1,54 @@
+- name: Frontend playbook
+  hosts: tag_Name_chess_back
+  become: yes
+  tasks:
+   - get_url:
+       url: https://rpm.nodesource.com/setup_6.x
+       dest: ~/script.sh
+     register: check   
+
+   - name: Changing permissions of script, adding "+x"
+     file: 
+       dest: ~/script.sh 
+       mode: a+x
+     when: check.changed
+
+   - name: Add the NodeSource yum repository to the system
+     shell: ~/script.sh
+     when: check.changed
+
+   - name: Ensure nodejs is present
+     yum:
+       name: nodejs
+       state: present  
+
+   - name: "Install forever (to run Node.js app)."
+     npm: 
+       name: forever 
+       global: yes 
+       state: present
+
+   - name: Create app directory
+     file:
+       path: /app
+       state: directory
+       mode: '0755'
+    #  when: check.changed
+
+   - name: Enxure unzip utility is present
+     yum:
+       name: unzip
+       state: present
+     when: check.changed
+
+   - name: Stop app
+     command: forever stopall
+
+   - name: Extract backend.zip
+     unarchive:
+       src: backend.zip
+       dest: /app
+   
+
+   - name: Start example Node.js app.
+     shell: MONGO_USER="{{ user }}" MONGO_PASS="{{ pass }}" DB_URL="{{ uri }}" forever start /app/lib/server/index.js
