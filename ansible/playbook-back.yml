@@ -22,7 +22,7 @@
        name: nodejs
        state: present  
 
-   - name: "Install forever (to run Node.js app)."
+   - name: Install forever (to run Node.js app)
      npm: 
        name: forever 
        global: yes 
@@ -33,9 +33,9 @@
        path: /app
        state: directory
        mode: '0755'
-    #  when: check.changed
+     when: check.changed
 
-   - name: Enxure unzip utility is present
+   - name: Ensure unzip utility is present
      yum:
        name: unzip
        state: present
@@ -48,7 +48,6 @@
      unarchive:
        src: backend.zip
        dest: /app
-   
-
+  
    - name: Start example Node.js app.
      shell: MONGO_USER="{{ user }}" MONGO_PASS="{{ pass }}" DB_URL="{{ uri }}" forever start /app/lib/server/index.js
