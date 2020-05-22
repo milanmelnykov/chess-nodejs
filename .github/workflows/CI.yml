@@ -107,12 +107,10 @@ jobs:
         aws-region: ${{ env.AWS_REGION }}
      
     - name: Ansible pre-steps
-      run: |
-        'echo "$SSH_KEY" > ./ansible/key'
-        unzip -o ./ansible/backend.zip
+      run: 'echo "$SSH_KEY" > ./ansible/key'
       shell: bash
       env:
         SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
         
-    - name: Ls ansible directory
-      run: ls ./ansible
+    - name: Unzip
+      run: unzip -o ./ansible/backend.zip
