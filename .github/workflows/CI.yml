@@ -109,7 +109,7 @@ jobs:
     - name: Ansible pre-steps
       run: |
         'echo "$SSH_KEY" > ./ansible/key'
-        unzip -o ./ansible/backend
+        unzip -o ./ansible/backend.zip
       shell: bash
       env:
         SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
