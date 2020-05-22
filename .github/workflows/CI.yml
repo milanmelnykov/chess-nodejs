@@ -117,6 +117,7 @@ jobs:
         cd ./ansible
         mv ./backend/backend.zip .
         zip -r frontend ./frontend
+        chmod +x  ec2.py
         
     - name: Deploy frontend part
       run: |
