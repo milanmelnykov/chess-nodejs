@@ -119,6 +119,11 @@ jobs:
         zip -r frontend ./frontend
         chmod +x  ec2.py
         
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 2.x
+        
     - name: Deploy frontend part
       run: |
         cd ./ansible
