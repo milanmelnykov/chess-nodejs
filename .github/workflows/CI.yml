@@ -123,4 +123,4 @@ jobs:
       run: |
         cd ./ansible
         echo ${{ env.EC2_USER }}
-        ansible-playbook -u ${{ env.EC2_USER }} --private-key key -i ec2.py playbook-front.yml
+        ansible-playbook -u centos --private-key key -i ec2.py playbook-front.yml
