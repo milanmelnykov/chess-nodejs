@@ -125,8 +125,9 @@ jobs:
 #         python-version: 2.x
         
 #     - run: pip install boto  
-    - name: Check ansible version
-      run: ansible --version
+    - name: Pip install modules
+      run: |
+        pip install ansible
         
     - name: Deploy frontend part
       run: |
