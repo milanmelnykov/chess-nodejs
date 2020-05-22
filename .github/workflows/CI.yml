@@ -3,12 +3,12 @@ env:
   NODE_VERSION : "6.x"
   AWS_REGION   : "eu-central-1"
 #   CACHE_PATH : node_modules
-on:
+# on:
 #   pull_request:
 #     branches: 
 #       - master
-  push:
-    branches: 
+#   push:
+#     branches: 
 #       - feature/*
 
 jobs:
