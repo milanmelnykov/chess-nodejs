@@ -29,8 +29,9 @@ jobs:
         
      - name: pip install ansible
        run: |
-         pip install ansible
-         pip install boto   
+         pip install boto
+         pip install ansible 
+         
      - name: Check script
        run: |
          cd ./ansible
