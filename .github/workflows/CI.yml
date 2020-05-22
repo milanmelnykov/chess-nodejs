@@ -1,9 +1,9 @@
 name: CHESS CI/CD
 env:
-  NODE_VERSION: 6.x
-  AWS_REGION: eu-central-1
-  UC2_USER: centos
-#   CACHE_PATH: node_modules
+  NODE_VERSION : "6.x"
+  AWS_REGION   : "eu-central-1"
+  UC2_USER     : "centos"
+#   CACHE_PATH : node_modules
 on:
 #   pull_request:
 #     branches: 
@@ -122,7 +122,5 @@ jobs:
     - name: Deploy frontend part
       run: |
         cd ./ansible
-        echo $EC2_USER
-        ansible-playbook -u $EC2_USER --private-key key -i ec2.py playbook-front.yml
-      env: 
-        EC2_USER: ${{ env.EC2_USER }}
+        echo ${{ env.EC2_USER }}
+        ansible-playbook -u ${{ env.EC2_USER }} --private-key key -i ec2.py playbook-front.yml
