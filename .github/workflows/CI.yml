@@ -124,6 +124,8 @@ jobs:
       with:
         python-version: 2.x
         
+    - run: pip install boto  
+        
     - name: Deploy frontend part
       run: |
         cd ./ansible
