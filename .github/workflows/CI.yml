@@ -106,13 +106,15 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
         aws-region: ${{ env.AWS_REGION }}
      
-    - name: Ansible pre-steps
-      run: |
-        cd ./ansible
-        'echo "$SSH_KEY" > key'
-        mv ./backend/backend.zip .
-        zip -r frontend ./frontend
+    - name: Import key
+      run: 'echo "$SSH_KEY" > ./ansible/key'
       shell: bash
       env:
         SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+      
+    - name: Prepare artifacts
+      run: |
+        cd ./ansible
+        mv ./backend/backend.zip .
+        zip -r frontend ./frontend
         
