@@ -1,16 +1,19 @@
-name: CHESS CD
+name: TEST ANSIBLE
 env: 
   AWS_REGION   : "eu-central-1"
 on:
   push:
     branches: 
-      - feauture/*
+      - test/*
 
 jobs:
-  CD:
+  TEST-ANSIBLE:
     runs-on: ubuntu-latest
 
     steps:  
+     - name: Checkout 
+       uses: actions/checkout@v2
+       
      - name: Configure AWS Credentials
        uses: aws-actions/configure-aws-credentials@v1.2.0
        with:
