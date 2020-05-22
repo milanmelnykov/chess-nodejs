@@ -2,7 +2,6 @@ name: CHESS CI/CD
 env:
   NODE_VERSION : "6.x"
   AWS_REGION   : "eu-central-1"
-  UC2_USER     : "centos"
 #   CACHE_PATH : node_modules
 on:
 #   pull_request:
@@ -123,4 +122,4 @@ jobs:
       run: |
         cd ./ansible
         echo ${{ env.EC2_USER }}
-        ansible-playbook -u centos --private-key key -i ec2.py playbook-front.yml
+        ansible-playbook --private-key key -i ec2.py playbook-front.yml
