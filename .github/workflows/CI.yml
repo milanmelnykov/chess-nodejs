@@ -108,7 +108,8 @@ jobs:
      
     - name: Ansible pre-steps
       run: |
-        'echo "$SSH_KEY" > ./ansible/key'
+        cd ./ansible
+        'echo "$SSH_KEY" > key'
         mv ./backend/backend.zip .
         zip -r frontend ./frontend
       shell: bash
