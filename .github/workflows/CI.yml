@@ -115,7 +115,9 @@ jobs:
     - name: Unzip
       run: |
         cd ./ansible
+        mv ./backend/backend.zip .
+        zip ./frontend
         ls -l
-        file backend
-        ls -l ./backend
-        ls -l ./frontend
+        
+    - name: Check pwd
+      run: pwd    
