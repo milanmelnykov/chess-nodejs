@@ -113,4 +113,6 @@ jobs:
         SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
         
     - name: Unzip
-      run: unzip -o ./ansible/backend.zip
+      run: |
+        cd ./ansible
+        unzip -o backend
