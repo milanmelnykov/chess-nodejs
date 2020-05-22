@@ -1,0 +1,30 @@
+name: CHESS CD
+env: 
+  AWS_REGION   : "eu-central-1"
+on:
+  push:
+    branches: 
+      - feauture/*
+
+jobs:
+  CI:
+    runs-on: ubuntu-latest
+
+    steps:  
+     - name: Configure AWS Credentials
+       uses: aws-actions/configure-aws-credentials@v1.2.0
+       with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+     
+     - name: Import key
+       run: 'echo "$SSH_KEY" > ./ansible/key'
+       shell: bash
+       env:
+        SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+        
+     - name: Check script
+       run: |
+         cd ./ansible
+         ./ec2.py
