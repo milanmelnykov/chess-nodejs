@@ -119,12 +119,14 @@ jobs:
         zip -r frontend ./frontend
         chmod +x  ec2.py
         
-    - name: Setup Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: 2.x
+#     - name: Setup Python
+#       uses: actions/setup-python@v2
+#       with:
+#         python-version: 2.x
         
-    - run: pip install boto  
+#     - run: pip install boto  
+    - name: Check ansible version
+      run: ansible --version
         
     - name: Deploy frontend part
       run: |
