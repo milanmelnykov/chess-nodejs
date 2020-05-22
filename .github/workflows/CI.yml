@@ -116,7 +116,8 @@ jobs:
       run: |
         cd ./ansible
         mv ./backend/backend.zip .
-        zip ./frontend
+        ls -l
+        zip -r frontend ./frontend
         ls -l
         
     - name: Check pwd
