@@ -1,47 +1,49 @@
 name: CHESS CI/CD
 env:
-  AWS_REGION: eu-central-1
-  CACHE_PATH: node_modules
-on:
+  NODE_VERSION : "6.x"
+  AWS_REGION   : "eu-central-1"
+#   CACHE_PATH : node_modules
+# on:
 #   pull_request:
 #     branches: 
 #       - master
-  push:
-    branches: 
-      - feauture/*
+#   push:
+#     branches: 
+#       - feature/*
 
 jobs:
   CI:
     runs-on: ubuntu-latest
 
     steps:  
-    - name: Clone repository 
+    - name: Checkout 
       uses: actions/checkout@v2
       
-    - name: Setup node.js 6.x
+    - name: Setup node.js ${{ env.NODE_VERSION }}
       uses: actions/setup-node@v1
       with:
-        node-version: 6.x
+        node-version: ${{ env.NODE_VERSION }}
          
-    - name: Cache node modules
-      uses: actions/cache@v1
-      with:
-        path: ${{ env.CACHE_PATH }}
-        key: ${{ env.CACHE_PATH }}-${{ hashFiles('package-lock.json') }}
-        restore-keys: |
-          ${{ env.CACHE_PATH }}-
+#                                   ---experimental---         
+#     - name: Cache node modules
+#       uses: actions/cache@v1
+#       with:
+#         path: ${{ env.CACHE_PATH }}
+#         key: ${{ env.CACHE_PATH }}-${{ hashFiles('package-lock.json') }}
+#         restore-keys: |
+#           ${{ env.CACHE_PATH }}-
     
     - name: Gazer dependencies
       run: npm install
       
-    - name: Test app
-      run: npm test 
+#     - name: Test app
+#       run: npm test 
 
-    - name: SonarCloud Scan
-      uses: sonarsource/sonarcloud-github-action@master
-      env:
-        GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+#     - name: SonarCloud Scan
+#       uses: sonarsource/sonarcloud-github-action@master
+#       env:
+#         GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+#         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
      
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1.2.0
@@ -76,10 +78,59 @@ jobs:
         name: backend
         path: backend.zip 
                 
-    - name: Status message to Telegram
-      uses: yanzay/notify-telegram@v0.1.0
-      if: always()
+#     - name: Status message to Telegram
+#       uses: yanzay/notify-telegram@v0.1.0
+#       if: always()
+#       with:
+#         chat: ${{ secrets.TG_USER }}
+#         token: ${{ secrets.TG_TOKEN }}
+#         status: ${{ job.status }}
+
+  deploy:
+    name: CD
+    needs: CI
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout 
+      uses: actions/checkout@v2
+      
+    - name: Download a Build Artifact
+      uses: actions/download-artifact@v2
       with:
-        chat: ${{ secrets.TG_USER }}
-        token: ${{ secrets.TG_TOKEN }}
-        status: ${{ job.status }}
+       path: ./ansible
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1.2.0
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+     
+    - name: Import key
+      run: 'echo "$SSH_KEY" > ./ansible/key'
+      shell: bash
+      env:
+        SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+      
+    - name: Prepare artifacts
+      run: |
+        cd ./ansible
+        mv ./backend/backend.zip .
+        zip -r frontend ./frontend
+        chmod +x  ec2.py
+        
+#     - name: Setup Python
+#       uses: actions/setup-python@v2
+#       with:
+#         python-version: 2.x
+        
+#     - run: pip install boto  
+    - name: Pip install modules
+      run: |
+        pip install ansible
+        
+    - name: Deploy frontend part
+      run: |
+        cd ./ansible
+        echo ${{ env.EC2_USER }}
+        ansible-playbook --private-key key -i ec2.py playbook-front.yml
