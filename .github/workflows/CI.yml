@@ -118,6 +118,7 @@ jobs:
         mv ./backend/backend.zip .
         zip -r frontend ./frontend
         chmod +x  ec2.py
+        chmod 600 key
  
     - name: Get ansible dependencies related to ec2.py
       run: |
