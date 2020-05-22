@@ -125,8 +125,14 @@ jobs:
         pip install boto
         pip install ansible
         
-    - name: Deploy frontend part
+    - name: Deploy frontend
       run: |
         cd ./ansible
-        echo ${{ env.EC2_USER }}
         ansible-playbook --private-key key -i ec2.py playbook-front.yml
+        
+    - name: Deploy fbackend
+      run: |
+        cd ./ansible
+        ansible-playbook --private-key key -i ec2.py playbook-back.yml \
+        --extra-vars "user=${{ secrets.MONGO_USER }} pass=${{ secrets.MONGO_PASS }} \
+        uri='${{ secrets.MONGO_URI }}'"
