@@ -117,4 +117,5 @@ jobs:
         cd ./ansible
         ls -l
         file backend
-        unzip -o backend
+        ls -l ./backend
+        ls -l ./frontend
