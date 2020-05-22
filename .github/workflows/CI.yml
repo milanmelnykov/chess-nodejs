@@ -3,13 +3,13 @@ env:
   NODE_VERSION : "6.x"
   AWS_REGION   : "eu-central-1"
 #   CACHE_PATH : node_modules
-# on:
+on:
 #   pull_request:
 #     branches: 
 #       - master
-#   push:
-#     branches: 
-#       - feature/*
+  push:
+    branches: 
+      - feature/*
 
 jobs:
   CI:
@@ -118,15 +118,10 @@ jobs:
         mv ./backend/backend.zip .
         zip -r frontend ./frontend
         chmod +x  ec2.py
-        
-#     - name: Setup Python
-#       uses: actions/setup-python@v2
-#       with:
-#         python-version: 2.x
-        
-#     - run: pip install boto  
-    - name: Pip install modules
+ 
+    - name: Get ansible dependencies related to ec2.py
       run: |
+        pip install boto
         pip install ansible
         
     - name: Deploy frontend part
