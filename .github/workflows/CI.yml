@@ -115,6 +115,6 @@ jobs:
     - name: Unzip
       run: |
         cd ./ansible
-        ls -a
-        ll
+        ls -l
+        file backend
         unzip -o backend
