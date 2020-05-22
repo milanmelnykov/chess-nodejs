@@ -93,7 +93,25 @@ jobs:
     steps:
     - name: Checkout 
       uses: actions/checkout@v2
-#     - name: Download a Build Artifact
-#       uses: actions/download-artifact@v2
-#       with:
-#        path: ./ansible
+      
+    - name: Download a Build Artifact
+      uses: actions/download-artifact@v2
+      with:
+       path: ./ansible
+    - name: Ls ansible directory
+      run: ls ./ansible
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1.2.0
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+     
+    - name: Import key 
+      run: 'echo "$SSH_KEY" > ./ansible/key'
+      shell: bash
+      env:
+        SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+        
+    - name: Ls ansible directory
+      run: ls ./ansible
