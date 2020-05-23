@@ -53,7 +53,7 @@ jobs:
         
     - name: Prepare ansible to work
       run: |
-        ls -l
+        ls -l ansible/
         pip install boto
         pip install ansible
         cd ./ansible
