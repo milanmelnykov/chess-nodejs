@@ -53,11 +53,21 @@ jobs:
         
     - name: Prepare ansible to work
       run: |
-        ls -l ansible/
         pip install boto
         pip install ansible
         cd ./ansible
         chmod +x  ec2.py
         chmod 600 key
       
+    - name: Deploy frontend
+      run: |
+        cd ./ansible
+        ansible-playbook --private-key key -i ec2.py playbook-front.yml
+        
+    - name: Deploy fbackend
+      run: |
+        cd ./ansible
+        ansible-playbook --private-key key -i ec2.py playbook-back.yml \
+        --extra-vars "user=${{ secrets.MONGO_USER }} pass=${{ secrets.MONGO_PASS }} \
+        uri='${{ secrets.MONGO_URI }}'"
      
