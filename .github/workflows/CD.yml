@@ -9,7 +9,7 @@ on:
       - feature/cd
 
 jobs:
-  CI:
+  CD:
     runs-on: ubuntu-latest
 
     steps:  
@@ -44,7 +44,6 @@ jobs:
        zip ansible/backend -r node_modules/ lib/server/ lib/common/
        cd lib/client
        zip ../../ansible/frontend -r ./*
-       ls -l
        
     - name: Import key
       run: 'echo "$SSH_KEY" > ./ansible/key'
@@ -54,6 +53,7 @@ jobs:
         
     - name: Prepare ansible to work
       run: |
+        ls -l
         pip install boto
         pip install ansible
         cd ./ansible
