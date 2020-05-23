@@ -1,20 +1,20 @@
-# name: CHESS CD
-# env: 
-#   AWS_REGION   : "eu-central-1"
-#   NODE_VERSION : "6.x"
-# on:
+name: CHESS CD
+env: 
+  AWS_REGION   : "eu-central-1"
+  NODE_VERSION : "6.x"
+on:
   
-#   push:
-#     branches: 
-#       - feature/cd
+  push:
+    branches: 
+      - feature/cd
 
-# jobs:
-#   CD:
-#     runs-on: ubuntu-latest
+jobs:
+  CD:
+    runs-on: ubuntu-latest
 
-#     steps:  
-#     - name: Checkout 
-#       uses: actions/checkout@v2
+    steps:  
+    - name: Checkout 
+      uses: actions/checkout@v2
       
 #     - name: Setup node.js ${{ env.NODE_VERSION }}
 #       uses: actions/setup-node@v1
@@ -24,12 +24,12 @@
 #     - name: Gazer dependencies
 #       run: npm install
     
-#     - name: Configure AWS Credentials
-#       uses: aws-actions/configure-aws-credentials@v1.2.0
-#       with:
-#         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-#         aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
-#         aws-region: ${{ env.AWS_REGION }}
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1.2.0
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
         
 #     - name: Build frontend application 
 #       run: |
@@ -45,29 +45,34 @@
 #        cd lib/client
 #        zip ../../ansible/frontend -r ./*
        
-#     - name: Import key
-#       run: 'echo "$SSH_KEY" > ./ansible/key'
-#       shell: bash
-#       env:
-#         SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+    - name: Get artifacts from S3 bucket   
+      run: |
+        aws s3 cp s3://s3chess/fronend.zip ./ansible/
+        aws s3 cp s3://s3chess/backend.zip ./ansible/
         
-#     - name: Prepare ansible to work
-#       run: |
-#         pip install boto
-#         pip install ansible
-#         cd ./ansible
-#         chmod +x  ec2.py
-#         chmod 600 key
+    - name: Import key
+      run: 'echo "$SSH_KEY" > ./ansible/key'
+      shell: bash
+      env:
+        SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+        
+    - name: Prepare ansible to work
+      run: |
+        pip install boto
+        pip install ansible
+        cd ./ansible
+        chmod +x  ec2.py
+        chmod 600 key
       
-#     - name: Deploy frontend
-#       run: |
-#         cd ./ansible
-#         ansible-playbook --private-key key -i ec2.py playbook-front.yml
+    - name: Deploy frontend
+      run: |
+        cd ./ansible
+        ansible-playbook --private-key key -i ec2.py playbook-front.yml
         
-#     - name: Deploy fbackend
-#       run: |
-#         cd ./ansible
-#         ansible-playbook --private-key key -i ec2.py playbook-back.yml \
-#         --extra-vars "user=${{ secrets.MONGO_USER }} pass=${{ secrets.MONGO_PASS }} \
-#         uri='${{ secrets.MONGO_URI }}'"
+    - name: Deploy fbackend
+      run: |
+        cd ./ansible
+        ansible-playbook --private-key key -i ec2.py playbook-back.yml \
+        --extra-vars "user=${{ secrets.MONGO_USER }} pass=${{ secrets.MONGO_PASS }} \
+        uri='${{ secrets.MONGO_URI }}'"
      
