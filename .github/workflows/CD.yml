@@ -22,7 +22,7 @@ jobs:
         node-version: ${{ env.NODE_VERSION }}
         
     - name: Gazer dependencies
-      run: npm install --production
+      run: npm install
     
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1.2.0
