@@ -47,7 +47,7 @@ jobs:
        
     - name: Get artifacts from S3 bucket   
       run: |
-        aws s3 cp s3://s3chess/fronend.zip ./ansible/
+        aws s3 cp s3://s3chess/frontend.zip ./ansible/
         aws s3 cp s3://s3chess/backend.zip ./ansible/
         
     - name: Import key
