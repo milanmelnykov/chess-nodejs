@@ -1,22 +1,20 @@
-name: CHESS CI/CD
+name: CHESS CI
 env:
-  NODE_VERSION: 6.x
-  AWS_REGION: eu-central-1
-#   CACHE_PATH: node_modules
+  NODE_VERSION : "6.x"
+  AWS_REGION   : "eu-central-1"
+#   CACHE_PATH : node_modules
 on:
-#   pull_request:
-#     branches: 
-#       - master
-  push:
+  pull_request:
     branches: 
-      - feauture/*
+      - master
+      - dev
 
 jobs:
   CI:
     runs-on: ubuntu-latest
 
     steps:  
-    - name: Clone repository 
+    - name: Checkout 
       uses: actions/checkout@v2
       
     - name: Setup node.js ${{ env.NODE_VERSION }}
@@ -46,13 +44,15 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
      
     - name: Configure AWS Credentials
+      if: ${{ github.ref == 'ref/head/master' }}
       uses: aws-actions/configure-aws-credentials@v1.2.0
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
         aws-region: ${{ env.AWS_REGION }}
     
-    - name: Build production artifact of client-side application 
+    - name: Build production artifact of client-side application
+      if: ${{ github.ref == 'ref/head/master' }}
       run: |
         NODE_ENV=production API_URL=//$(aws ec2 describe-instances \
         --region ${{ env.AWS_REGION }} \
@@ -61,23 +61,18 @@ jobs:
         npm run build
         
     - name: Zip artifacts
+      if: ${{ github.ref == 'ref/head/master' }}
       run: |
        zip backend -r node_modules/ lib/server/ lib/common/
-      # cd lib/client
-      # zip frontend -r ./*
+       cd lib/client
+       zip ../../frontend -r ./*
       
-    - name: Upload frontend artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: frontend
-        path: lib/client/*
-    
-    - name: Upload backend artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: backend
-        path: backend.zip 
-                
+    - name: Upload artifacts to S3 bucket
+      if: ${{ github.ref == 'ref/head/master' }}
+      run: |
+        aws s3 cp frontend.zip s3://s3chess/
+        aws s3 cp backend.zip s3://s3chess/
+          
     - name: Status message to Telegram
       uses: yanzay/notify-telegram@v0.1.0
       if: always()
