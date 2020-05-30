@@ -4,10 +4,13 @@ env:
   AWS_REGION   : "eu-central-1"
 #   CACHE_PATH : node_modules
 on:
-  pull_request:
+#   pull_request:
+#     branches: 
+#       - master
+#       - dev
+  push:
     branches: 
-      - master
-      - dev
+      - feature/*
 
 jobs:
   CI:
