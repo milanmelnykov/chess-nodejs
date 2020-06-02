@@ -1,12 +1,13 @@
 name: CHESS CD
 env: 
-  AWS_REGION   : "eu-central-1"
-  NODE_VERSION : "6.x"
+  AWS_REGION    : "eu-central-1"
+  NODE_VERSION  : "6.x"
+  FRONTEND_NAME : "chess-front"
+  BACKEND_NAME  : "chess-back"
 on:
-  
   push:
     branches: 
-      - master
+      - feature/docker
 
 jobs:
   CD:
@@ -16,41 +17,42 @@ jobs:
     - name: Checkout 
       uses: actions/checkout@v2
       
+    - name: Setup node.js ${{ env.NODE_VERSION }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1.2.0
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
         aws-region: ${{ env.AWS_REGION }}
+
+    - name: Docker login
+      run: docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASS }}
+    
+    - name: Gazer dependencies
+      run: npm install
        
-    - name: Get artifacts from S3 bucket   
+    - name: Build docker ${{ env.BACKEND_NAME }} image 
+      run: docker build -t ${{ secrets.DOCKER_USER }}/${{ env.BACKEND_NAME }} -f Docker/DockerfileBack .  \
+           --build-arg MONGO_USER=${{ secrets.MONGO_USER }} --build-arg MONGO_PASS=${{ secrets.MONGO_PASS }} \
+           --build-arg MONGO_URI=${{ secrets.MONGO_URI }}
+
+    # temp - ip should be assigned as k8s ... 
+    - name: Build frontend application
       run: |
-        aws s3 cp s3://s3chess/frontend.zip ./ansible/
-        aws s3 cp s3://s3chess/backend.zip ./ansible/
+        NODE_ENV=production API_URL=//$(aws ec2 describe-instances \
+        --region ${{ env.AWS_REGION }} \
+        --filter Name=tag:Name,Values=chess-back \
+        --output=text |grep ASSOCIATION|uniq -c|awk '{print $5}'):8081 \
+        npm run build
         
-    - name: Import key
-      run: 'echo "$SSH_KEY" > ./ansible/key'
-      shell: bash
-      env:
-        SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
-        
-    - name: Prepare ansible to work
-      run: |
-        pip install boto
-        pip install ansible
-        cd ./ansible
-        chmod +x  ec2.py
-        chmod 600 key
+    - name: Build docker ${{ env.FRONTEND_NAME }} image
+      run: docker build -t ${{ secrets.DOCKER_USER }}/${{ env.FRONTEND_NAME }} -f Docker/DockerfileFront . 
       
-    - name: Deploy frontend
+    - name: Publish images to DockerHub
       run: |
-        cd ./ansible
-        ansible-playbook --private-key key -i ec2.py playbook-front.yml
-        
-    - name: Deploy backend
-      run: |
-        cd ./ansible
-        ansible-playbook --private-key key -i ec2.py playbook-back.yml \
-        --extra-vars "user=${{ secrets.MONGO_USER }} pass=${{ secrets.MONGO_PASS }} \
-        uri='${{ secrets.MONGO_URI }}'"
-     
+         docker push ${{ secrets.DOCKER_USER }}/${{ env.FRONTEND_NAME }}
+         docker push ${{ secrets.DOCKER_USER }}/${{ env.BACKEND_NAME }}
