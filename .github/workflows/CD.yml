@@ -28,9 +28,6 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
         aws-region: ${{ env.AWS_REGION }}
-
-    - name: Docker login
-      run: docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASS }}
     
     - name: Gazer dependencies
       run: npm install
@@ -38,9 +35,11 @@ jobs:
     - name: Build and push backend images
       uses: docker/build-push-action@v1.1.0
       with:
+        username: ${{ secrets.DOCKER_USER }}
+        password: ${{ secrets.DOCKER_PASS }}
         dockerfile: Docker/DockerfileBack
         repository: ${{ secrets.DOCKER_USER }}/${{ env.BACKEND_NAME }}
-        build_args: MONGO_USER=${{ secrets.MONGO_USER }}, MONGO_PASS=${{ secrets.MONGO_PASS }}, MONGO_URI='${{ secrets.MONGO_URI }}
+        build_args: MONGO_USER=${{ secrets.MONGO_USER }},MONGO_PASS=${{ secrets.MONGO_PASS }},MONGO_URI='${{ secrets.MONGO_URI }}
         tags: latest
         
 #     - name: Build docker backend image 
