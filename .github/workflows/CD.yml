@@ -36,7 +36,7 @@ jobs:
       run: npm install
        
     - name: Build docker ${{ env.BACKEND_NAME }} image 
-      run: docker build -t ${{ secrets.DOCKER_USER }}/${{ env.BACKEND_NAME }} -f Docker/DockerfileBack .  \
+      run: docker build -t ${{ secrets.DOCKER_USER }}/${{ env.BACKEND_NAME }} -f Docker/DockerfileBack . \
            --build-arg MONGO_USER=${{ secrets.MONGO_USER }} --build-arg MONGO_PASS=${{ secrets.MONGO_PASS }} \
            --build-arg MONGO_URI='${{ secrets.MONGO_URI }}'
 
