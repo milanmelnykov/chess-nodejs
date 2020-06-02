@@ -35,10 +35,10 @@ jobs:
     - name: Gazer dependencies
       run: npm install
        
-    - name: Build docker ${{ env.BACKEND_NAME }} image 
+    - name: Build docker backend image 
       run: docker build -t ${{ secrets.DOCKER_USER }}/${{ env.BACKEND_NAME }} -f Docker/DockerfileBack . \
-           --build-arg MONGO_USER=${{ secrets.MONGO_USER }} --build-arg MONGO_PASS=${{ secrets.MONGO_PASS }} \
-           --build-arg MONGO_URI='${{ secrets.MONGO_URI }}'
+       --build-arg MONGO_USER=${{ secrets.MONGO_USER }} --build-arg MONGO_PASS=${{ secrets.MONGO_PASS }} \
+       --build-arg MONGO_URI='${{ secrets.MONGO_URI }}'
 
     # temp - ip should be assigned as k8s ... 
     - name: Build frontend application
@@ -49,7 +49,7 @@ jobs:
         --output=text |grep ASSOCIATION|uniq -c|awk '{print $5}'):8081 \
         npm run build
         
-    - name: Build docker ${{ env.FRONTEND_NAME }} image
+    - name: Build docker frontend image
       run: docker build -t ${{ secrets.DOCKER_USER }}/${{ env.FRONTEND_NAME }} -f Docker/DockerfileFront . 
       
     - name: Publish images to DockerHub
