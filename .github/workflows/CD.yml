@@ -32,7 +32,7 @@ jobs:
     - name: Gazer dependencies
       run: npm install
        
-    - name: Build and push backend images
+    - name: Build and push backend image
       uses: docker/build-push-action@v1.1.0
       with:
         username: ${{ secrets.DOCKER_USER }}
@@ -47,17 +47,21 @@ jobs:
 #        --build-arg MONGO_USER=${{ secrets.MONGO_USER }} --build-arg MONGO_PASS=${{ secrets.MONGO_PASS }} \
 #        --build-arg MONGO_URI='${{ secrets.MONGO_URI }}'
 
-    # temp - ip should be assigned as k8s ... 
-#     - name: Build frontend application
-#       run: |
-#         NODE_ENV=production API_URL=//$(aws ec2 describe-instances \
-#         --region ${{ env.AWS_REGION }} \
-#         --filter Name=tag:Name,Values=chess-back \
-#         --output=text |grep ASSOCIATION|uniq -c|awk '{print $5}'):8081 \
-#         npm run build
-        
-#     - name: Build docker frontend image
-#       run: docker build -t ${{ secrets.DOCKER_USER }}/${{ env.FRONTEND_NAME }} -f Docker/DockerfileFront . 
-      
-#     - name: Publish images to DockerHub
-#       run: docker push ${{ secrets.DOCKER_USER }}/${{ env.FRONTEND_NAME }}
+#     temp - ip should be assigned as k8s ... 
+    - name: Build frontend arfifact
+      run: |
+        NODE_ENV=production API_URL=//$(aws ec2 describe-instances \
+        --region ${{ env.AWS_REGION }} \
+        --filter Name=tag:Name,Values=chess-back \
+        --output=text |grep ASSOCIATION|uniq -c|awk '{print $5}'):8081 \
+        npm run build
+       
+    - name: Build and push frontend image
+      uses: docker/build-push-action@v1.1.0
+      with:
+        username: ${{ secrets.DOCKER_USER }}
+        password: ${{ secrets.DOCKER_PASS }}
+        dockerfile: Docker/DockerfileFront
+        repository: ${{ secrets.DOCKER_USER }}/${{ env.FRONTEND_NAME }}
+        tags: latest
+
