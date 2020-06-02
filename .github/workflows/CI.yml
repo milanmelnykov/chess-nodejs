@@ -37,8 +37,8 @@ jobs:
     - name: Gazer dependencies
       run: npm install
       
-    - name: Test app
-      run: npm test 
+#     - name: Test app
+#       run: npm test 
 
     - name: SonarCloud Scan
       uses: sonarsource/sonarcloud-github-action@master
