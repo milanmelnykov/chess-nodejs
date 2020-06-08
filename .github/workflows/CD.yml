@@ -7,7 +7,7 @@ env:
 on:
   push:
     branches: 
-      - featuree/docker
+      - feature/docker
 
 jobs:
   CD:
@@ -25,8 +25,8 @@ jobs:
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1.2.0
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY2 }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY2 }}
         aws-region: ${{ env.AWS_REGION }}
     
     - name: Gazer dependencies
@@ -41,13 +41,7 @@ jobs:
         repository: ${{ secrets.DOCKER_USER }}/${{ env.BACKEND_NAME }}
         build_args: MONGO_USER=${{ secrets.MONGO_USER }},MONGO_PASS=${{ secrets.MONGO_PASS }},MONGO_URI='${{ secrets.MONGO_URI }}
         tags: latest
-        
-#     - name: Build docker backend image 
-#       run: docker build -t "${{ secrets.DOCKER_USER }}/${{ env.BACKEND_NAME }}" -f "Docker/DockerfileBack" . \
-#        --build-arg MONGO_USER=${{ secrets.MONGO_USER }} --build-arg MONGO_PASS=${{ secrets.MONGO_PASS }} \
-#        --build-arg MONGO_URI='${{ secrets.MONGO_URI }}'
 
-#     temp - ip should be assigned as k8s ... 
     - name: Build frontend arfifact
       run: |
         NODE_ENV=production API_URL=//$(python Docker/back-dns-name.py):8081 \
