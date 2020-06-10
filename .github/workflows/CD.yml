@@ -31,7 +31,7 @@ jobs:
     
     - name: Gazer dependencies
       run: npm install
-       
+   # move build-args out of here
     - name: Build and push backend image
       uses: docker/build-push-action@v1.1.0
       with:
