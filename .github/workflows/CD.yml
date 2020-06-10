@@ -55,4 +55,3 @@ jobs:
         dockerfile: Docker/DockerfileFront
         repository: ${{ secrets.DOCKER_USER }}/${{ env.FRONTEND_NAME }}
         tags: latest
-
