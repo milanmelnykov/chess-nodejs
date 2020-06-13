@@ -1,9 +1,10 @@
 name: CHESS CD
 env: 
-  AWS_REGION   : "eu-central-1"
-  NODE_VERSION : "6.x"
+  AWS_REGION    : "eu-central-1"
+  NODE_VERSION  : "6.x"
+  FRONTEND_NAME : "chess-front"
+  BACKEND_NAME  : "chess-back"
 on:
-  
   push:
     branches: 
       - master
@@ -16,41 +17,41 @@ jobs:
     - name: Checkout 
       uses: actions/checkout@v2
       
+    - name: Setup node.js ${{ env.NODE_VERSION }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1.2.0
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY2 }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY2 }}
         aws-region: ${{ env.AWS_REGION }}
+    
+    - name: Gazer dependencies
+      run: npm install
+   # move build-args out of here as soon as it possible
+    - name: Build and push backend image
+      uses: docker/build-push-action@v1.1.0
+      with:
+        username: ${{ secrets.DOCKER_USER }}
+        password: ${{ secrets.DOCKER_PASS }}
+        dockerfile: Docker/DockerfileBack
+        repository: ${{ secrets.DOCKER_USER }}/${{ env.BACKEND_NAME }}
+        build_args: MONGO_USER=${{ secrets.MONGO_USER }},MONGO_PASS=${{ secrets.MONGO_PASS }},MONGO_URI=${{ secrets.MONGO_URI }}
+        tags: latest
+
+    - name: Build frontend arfifact
+      run: |
+        NODE_ENV=production API_URL=//$(python Docker/back-dns-name.py):8081 \
+        npm run build
        
-    - name: Get artifacts from S3 bucket   
-      run: |
-        aws s3 cp s3://s3chess/frontend.zip ./ansible/
-        aws s3 cp s3://s3chess/backend.zip ./ansible/
-        
-    - name: Import key
-      run: 'echo "$SSH_KEY" > ./ansible/key'
-      shell: bash
-      env:
-        SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
-        
-    - name: Prepare ansible to work
-      run: |
-        pip install boto
-        pip install ansible
-        cd ./ansible
-        chmod +x  ec2.py
-        chmod 600 key
-      
-    - name: Deploy frontend
-      run: |
-        cd ./ansible
-        ansible-playbook --private-key key -i ec2.py playbook-front.yml
-        
-    - name: Deploy backend
-      run: |
-        cd ./ansible
-        ansible-playbook --private-key key -i ec2.py playbook-back.yml \
-        --extra-vars "user=${{ secrets.MONGO_USER }} pass=${{ secrets.MONGO_PASS }} \
-        uri='${{ secrets.MONGO_URI }}'"
-     
+    - name: Build and push frontend image
+      uses: docker/build-push-action@v1.1.0
+      with:
+        username: ${{ secrets.DOCKER_USER }}
+        password: ${{ secrets.DOCKER_PASS }}
+        dockerfile: Docker/DockerfileFront
+        repository: ${{ secrets.DOCKER_USER }}/${{ env.FRONTEND_NAME }}
+        tags: latest

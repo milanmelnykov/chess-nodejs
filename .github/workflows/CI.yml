@@ -2,7 +2,6 @@ name: CHESS CI
 env:
   NODE_VERSION : "6.x"
   AWS_REGION   : "eu-central-1"
-#   CACHE_PATH : node_modules
 on:
   pull_request:
     branches: 
@@ -21,15 +20,6 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ env.NODE_VERSION }}
-         
-#                                   ---experimental---         
-#     - name: Cache node modules
-#       uses: actions/cache@v1
-#       with:
-#         path: ${{ env.CACHE_PATH }}
-#         key: ${{ env.CACHE_PATH }}-${{ hashFiles('package-lock.json') }}
-#         restore-keys: |
-#           ${{ env.CACHE_PATH }}-
     
     - name: Gazer dependencies
       run: npm install
@@ -37,42 +27,12 @@ jobs:
     - name: Test app
       run: npm test 
 
-#     - name: SonarCloud Scan
-#       uses: SonarSource/sonarcloud-github-action@v1.2
-#       env:
-#         GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
-#         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-     
-    - name: Configure AWS Credentials
-      if: contains(github.base_ref, 'master')
-      uses: aws-actions/configure-aws-credentials@v1.2.0
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
-        aws-region: ${{ env.AWS_REGION }}
-    
-    - name: Build production artifact of client-side application
-      if: contains(github.base_ref, 'master')
-      run: |
-        NODE_ENV=production API_URL=//$(aws ec2 describe-instances \
-        --region ${{ env.AWS_REGION }} \
-        --filter Name=tag:Name,Values=chess-back \
-        --output=text |grep ASSOCIATION|uniq -c|awk '{print $5}'):8081 \
-        npm run build
-        
-    - name: Zip artifacts
-      if: contains(github.base_ref, 'master')
-      run: |
-       zip backend -r node_modules/ lib/server/ lib/common/
-       cd lib/client
-       zip ../../frontend -r ./*
-      
-    - name: Upload artifacts to S3 bucket
-      if: contains(github.base_ref, 'master')
-      run: |
-        aws s3 cp frontend.zip s3://s3chess/
-        aws s3 cp backend.zip s3://s3chess/
-          
+    - name: SonarCloud Scan
+      uses: sonarsource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
     - name: Status message to Telegram
       uses: yanzay/notify-telegram@v0.1.0
       if: always()

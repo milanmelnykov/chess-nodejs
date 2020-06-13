@@ -1,0 +1,21 @@
+FROM iammilan/node6-centos7
+
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+
+RUN npm install --only=prod
+
+COPY lib/ ./lib/
+
+ARG MONGO_USER
+ARG MONGO_PASS
+ARG MONGO_URI
+
+ENV USER=$MONGO_USER \
+    PASS=$MONGO_PASS \
+    URI=$MONGO_URI
+
+EXPOSE 8081
+
+CMD ["sh", "-c", "MONGO_USER=$USER MONGO_PASS=$PASS DB_URL=$URI node ./lib/server/index.js"]
